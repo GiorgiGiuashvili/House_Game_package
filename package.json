@@ -1,8 +1,8 @@
 {
-  "name": "com.appidea.minigames.House_Game",
-  "version": "0.1.0",
-  "displayName": "House_Game",
-  "description": "Your mini game description",
+  "name": "com.appidea.minigames.house_game",
+  "version": "0.1.2",
+  "displayName": "house_game",
+  "description": "to match objects",
   "dependencies": {
     "com.unity.addressables": "1.21.21",
     "com.unity.render-pipelines.universal": "14.0.10"

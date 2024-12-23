@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be96c86d337b413a9883ba842490e1dc, type: 3}
   m_Name: MiniGameConfig
   m_EditorClassIdentifier: 
-  MiniGameName: house_game
-  Version: 0.1.0
-  Url: https://pub-25aac79de2874128b8959df03a3fa3d1.r2.dev
+  MiniGameName: House_Game
+  Version: 0.1.2
+  Url: 
   CustomRenderPipelineAsset: {fileID: 11400000, guid: 36eef4c5ac8b5bf4db9ab26f0b33cabb, type: 2}

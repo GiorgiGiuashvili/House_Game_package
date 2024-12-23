@@ -9,7 +9,7 @@ public class HouseGameEntryPoint : BaseMiniGameEntryPoint
     protected override Task LoadInternal()
     {
         var gameManager = Instantiate(gamePrefab);
-        gameManager.GetComponent<ObjectSpawner>().SetEntryPoint(this);
+        gameManager.GetComponentInChildren<ObjectSpawner>().SetEntryPoint(this);
         return Task.CompletedTask;
     }
 

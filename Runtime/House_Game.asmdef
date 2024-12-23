@@ -2,9 +2,9 @@
     "name": "com.appidea.MiniGamePlatform.House_Game",
     "rootNamespace": "com.appidea.MiniGamePlatform.House_Game",
     "references": [
-        "GUID:6680e2c2339c341f19e38e41d1dfb20b",
-        "GUID:9e24947de15b9834991c9d8411ea37cf",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "com.appidea.MiniGamePlatform.CommunicationAPI",
+        "Unity.Addressables",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
