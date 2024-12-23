@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MiniGameName: House_Game
   Version: 0.1.2
-  Url: 
+  Url: 'https://pub-25aac79de2874128b8959df03a3fa3d1.r2.dev '
   CustomRenderPipelineAsset: {fileID: 11400000, guid: 36eef4c5ac8b5bf4db9ab26f0b33cabb, type: 2}
