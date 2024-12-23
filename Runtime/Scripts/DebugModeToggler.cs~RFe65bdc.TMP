@@ -1,0 +1,61 @@
+using UnityEngine;
+
+public class DebugModeToggler : MonoBehaviour
+{
+    private int tapCount = 0;
+    private float tapTimeLimit = 0.5f; 
+    private float lastTapTime = 0f;
+
+    public bool isDebugModeActive = false;
+
+    public GameObject Board;
+    public GameObject RestartButton;
+
+    void Update()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                float timeSinceLastTap = Time.time - lastTapTime;
+
+                if (timeSinceLastTap <= tapTimeLimit)
+                {
+                    tapCount++;
+                }
+                else
+                {
+                    tapCount = 1; 
+                }
+
+                lastTapTime = Time.time;
+
+                if (tapCount >= 3)
+                {
+                    ToggleDebugMode();
+                    tapCount = 0;
+                }
+            }
+        }
+    }
+
+    private void ToggleDebugMode()
+    {
+        isDebugModeActive = !isDebugModeActive;
+        if (isDebugModeActive)
+        {
+            debugText.SetActive(true);
+            FpsText.SetActive(true);    
+            Board.SetActive(true);
+            RestartButton.SetActive(true);
+        }
+        else
+        {
+            debugText.SetActive(false);
+            FpsText.SetActive(false);
+            Board.SetActive(false);
+            RestartButton.SetActive(false);
+        }
+    }
+}

@@ -1,0 +1,87 @@
+using TMPro;
+using UnityEngine;
+
+public class DebugModeToggler : MonoBehaviour
+{
+    private int tapCount = 0;
+    private float tapTimeLimit = 0.5f; 
+    private float lastTapTime = 0f;
+
+    public bool isDebugModeActive = false;
+
+    public GameObject Board;
+    public GameObject RestartButton;
+    public TextMeshProUGUI debugText;
+    public TextMeshProUGUI FpsText;
+
+    void Update()
+    {
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                float timeSinceLastTap = Time.time - lastTapTime;
+
+                if (timeSinceLastTap <= tapTimeLimit)
+                {
+                    tapCount++;
+                }
+                else
+                {
+                    tapCount = 1; 
+                }
+
+                lastTapTime = Time.time;
+
+                if (tapCount >= 3)
+                {
+                    ToggleDebugMode();
+                    tapCount = 0;
+                }
+            }
+        }
+    }
+    public enum FPSLimit
+    {
+        NoLimit = 0,
+        Limit30 = 30,
+        Limit60 = 60,
+        Limit120 = 120,
+        Limit240 = 240
+    }
+
+    public FPSLimit fpsLimit = FPSLimit.NoLimit;
+
+    void Start()
+    {
+        SetFPSLimit(fpsLimit);
+    }
+
+    public void SetFPSLimit(FPSLimit limit)
+    {
+        Application.targetFrameRate = (int)limit;
+        FpsText.text = "Fps: " + limit.ToString();
+    }
+
+    private void ToggleDebugMode()
+    {
+        isDebugModeActive = !isDebugModeActive;
+        if (isDebugModeActive)
+        {
+            debugText.enabled = true;
+            FpsText.enabled = true;    
+            Board.SetActive(true);
+            RestartButton.SetActive(true);
+        }
+        else
+        {
+            debugText.enabled = false;
+            FpsText.enabled = false;
+            Board.SetActive(false);
+            RestartButton.SetActive(false);
+        }
+    }
+
+  
+}

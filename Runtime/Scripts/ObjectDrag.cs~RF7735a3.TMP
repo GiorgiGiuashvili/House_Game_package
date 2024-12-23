@@ -1,0 +1,216 @@
+using System.Collections;
+using UnityEngine;
+
+public class ObjectDrag : MonoBehaviour
+{
+    private Vector3 originalPosition;
+    private Vector3 offset;
+    private bool isDragging = false;
+    private bool isPlaced = false;
+
+    public Transform targetPosition;
+    public string correctTag = "";
+
+    private ObjectSpawner _Spawner;
+    private bool moving = false;
+
+    private float snapThreshold = 0.1f;
+    private float snapSpeed = 3;
+    public float animationDelay;
+
+    private void Start()
+    {
+        transform.localScale = new Vector3(0.20f, 0.20f, 0.20f);
+        _Spawner = FindObjectOfType<ObjectSpawner>();
+    }
+
+    private void Update()
+    {
+        if (isPlaced) return;
+
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            Vector3 touchPosition = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.nearClipPlane));
+
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    if (IsTouchingObject(touchPosition))
+                    {
+                        StartDragging(touchPosition);
+                    }
+                    break;
+
+                case TouchPhase.Moved:
+                    if (isDragging)
+                    {
+                        DragObject(touchPosition);
+                    }
+                    break;
+
+                case TouchPhase.Ended:
+                    if (isDragging)
+                    {
+                        StopDragging();
+                    }
+                    break;
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
+            if (IsTouchingObject(mousePosition))
+            {
+                StartDragging(mousePosition);
+            }
+        }
+        else if (Input.GetMouseButton(0) && isDragging)
+        {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
+            DragObject(mousePosition);
+        }
+        else if (Input.GetMouseButtonUp(0) && isDragging)
+        {
+            StopDragging();
+        }
+    }
+
+   /* public void SetSpineAnimation(string animationName, bool loop = false)
+    {
+        if (skeletonAnimation != null)
+        {
+            StartCoroutine(PlayAnimationWithDelay(animationName, loop));
+        }
+    }*/
+
+    private IEnumerator PlayAnimationWithDelay(string animationName, bool loop)
+    {
+        yield return new WaitForSeconds(animationDelay);
+/*        skeletonAnimation.state.SetAnimation(0, animationName, loop);
+*/    }
+
+    private bool IsTouchingObject(Vector3 position)
+    {
+        Collider2D hitCollider = Physics2D.OverlapPoint(position);
+        return hitCollider != null && hitCollider.gameObject == gameObject;
+    }
+
+    private void DragObject(Vector3 position)
+    {
+        transform.position = new Vector3(position.x + offset.x, position.y + offset.y, transform.position.z);
+        transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+    }
+
+    private void StopDragging()
+    {
+        transform.localScale = new Vector3(0.20f, 0.20f, 0.20f);
+        isDragging = false;
+        CheckDropPosition();
+    }
+
+    private bool isInsideTriggerArea = false;
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag(correctTag))
+        {
+            isInsideTriggerArea = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag(correctTag))
+        {
+            isInsideTriggerArea = false;
+        }
+    }
+
+    private void CheckDropPosition()
+    {
+        if (targetPosition != null && isInsideTriggerArea)
+        {
+            transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+            StartCoroutine(SmoothSnapToTargetPosition(targetPosition.position));
+        }
+        else
+        {
+            StartCoroutine(WrongMoveAnimation());
+        }
+    }
+
+
+    private IEnumerator WrongMoveAnimation()
+    {
+        transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+        Quaternion startRotation = transform.rotation;
+        Quaternion targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 4);
+        float time = 0;
+        float duration = 0.2f;
+
+        while (time < 1)
+        {
+            time += Time.deltaTime / duration;
+            transform.rotation = Quaternion.Lerp(startRotation, targetRotation, time);
+            yield return null;
+        }
+
+        startRotation = transform.rotation;
+        targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, -4);
+        time = 0;
+
+        while (time < 1)
+        {
+            time += Time.deltaTime / duration;
+            transform.rotation = Quaternion.Lerp(startRotation, targetRotation, time);
+            yield return null;
+        }
+
+        startRotation = transform.rotation;
+        targetRotation = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 0);
+        time = 0;
+
+        while (time < 1)
+        {
+            time += Time.deltaTime / duration;
+            transform.rotation = Quaternion.Lerp(startRotation, targetRotation, time);
+            yield return null;
+        }
+        StartCoroutine(SmoothSnapToTargetPosition(originalPosition));
+
+    }
+
+
+    private void StartDragging(Vector3 position)
+    {
+        originalPosition = transform.position;
+        offset = transform.position - position;
+        isDragging = true;
+    }
+
+    private IEnumerator SmoothSnapToTargetPosition(Vector3 targetPos)
+    {
+        float time = 0;
+        Vector3 startPos = transform.position;
+
+        while (time < 1)
+        {
+            transform.position = Vector3.Lerp(startPos, targetPos, time);
+            time += Time.deltaTime * snapSpeed;
+            yield return null;
+        }
+
+        transform.position = targetPos;
+        if (targetPos == originalPosition)
+        {
+            transform.localScale = new Vector3(0.20f, 0.20f, 0.20f);
+        }
+        else
+        {
+            isPlaced = true;
+            _Spawner?.ObjectPlaced();
+            transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+        }
+    }
+}
