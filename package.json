@@ -1,6 +1,6 @@
 {
   "name": "com.appidea.minigames.house_game",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "displayName": "house_game",
   "description": "to match objects",
   "dependencies": {
